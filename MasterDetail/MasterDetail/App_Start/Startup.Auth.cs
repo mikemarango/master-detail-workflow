@@ -60,11 +60,11 @@ namespace MasterDetail
             //   appId: "",
             //   appSecret: "");
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            {
+                ClientId = "879706556415-jp5k9l3hbut39uo81d8npe8rtokhl74a.apps.googleusercontent.com",
+                ClientSecret = "ExVLLUFJP07LoqilLiTgFNES"
+            });
         }
     }
 }

@@ -26,6 +26,8 @@ namespace MasterDetail.DataLayer
                     new IndexAnnotation(new IndexAttribute("AK_InventoryItem_InventoryItemName") { IsUnique = true }));
 
             Property(ii => ii.UnitPrice).HasPrecision(18, 2);
+
+            HasRequired(ii => ii.Category).WithMany(cat => cat.InventoryItems).WillCascadeOnDelete(false);
         }
     }
 }

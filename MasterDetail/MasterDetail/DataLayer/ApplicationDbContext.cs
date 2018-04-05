@@ -42,5 +42,9 @@ namespace MasterDetail.DataLayer
         {
             return new ApplicationDbContext();
         }
+
+        //public System.Data.Entity.DbSet<MasterDetail.Models.ApplicationUser> ApplicationUsers { get; set; }
+
+        //public System.Data.Entity.DbSet<MasterDetail.Models.ApplicationRole> IdentityRoles { get; set; }
     }
 }

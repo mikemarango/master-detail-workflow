@@ -17,6 +17,8 @@ namespace MasterDetail.Models
         public WorkOrderStatus WorkOrderStatus { get; set; }
         public decimal Total { get; set; }
         public string CertificationRequirements { get; set; }
+        public ApplicationUser CurrentWorker { get; set; }
+        public string CurrentWorkerId { get; set; }
     }
 
 

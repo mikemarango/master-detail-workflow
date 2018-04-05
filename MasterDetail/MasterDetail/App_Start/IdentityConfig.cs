@@ -12,6 +12,9 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using MasterDetail.Models;
 using MasterDetail.DataLayer;
+using System.Net.Mail;
+using System.Net;
+using Twilio;
 
 namespace MasterDetail
 {
@@ -19,8 +22,28 @@ namespace MasterDetail
     {
         public Task SendAsync(IdentityMessage message)
         {
-            // Plug in your email service here to send an email.
-            return Task.FromResult(0);
+
+            const string userName = "mikeywafula@gmail.com"; //mikeywafula@gmail.com apikey
+            const string from = "testmasterdetails@gmail.com";
+            const string password = "@Syncsis118419amen"; // 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
+            const int port = 587;
+
+            var smtpClient = new SmtpClient("smtp.sendgrid.net", port)
+            {
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                EnableSsl = true,
+                Credentials = new NetworkCredential(userName, password)
+            };
+
+            var mailMessage = new MailMessage(from, message.Destination)
+            {
+                Subject = message.Subject,
+                Body = message.Body
+            };
+
+            return smtpClient.SendMailAsync(mailMessage);
+            
         }
     }
 
@@ -28,7 +51,16 @@ namespace MasterDetail
     {
         public Task SendAsync(IdentityMessage message)
         {
-            // Plug in your SMS service here to send a text message.
+            const string accountSid = "";
+            const string authToken = "";
+            const string phoneNumber = "";
+
+            //var twilioClient = new TwilioRestClient(accountSid, authToken);
+            //twilioClient.RequestAsync(accountSid, authToken);
+
+            var twilioRestClient = new TwilioRestClient(accountSid, authToken);
+            twilioRestClient.SendMessage(phoneNumber, message.Destination, message.Body);
+
             return Task.FromResult(0);
         }
     }
@@ -63,8 +95,8 @@ namespace MasterDetail
 
             // Configure user lockout defaults
             manager.UserLockoutEnabledByDefault = true;
-            manager.DefaultAccountLockoutTimeSpan = TimeSpan.FromMinutes(5);
-            manager.MaxFailedAccessAttemptsBeforeLockout = 5;
+            manager.DefaultAccountLockoutTimeSpan = TimeSpan.FromSeconds(30);
+            manager.MaxFailedAccessAttemptsBeforeLockout = 3;
 
             // Register two factor authentication providers. This application uses Phone and Emails as a step of receiving a code for verifying the user
             // You can write your own provider and plug it in here.
