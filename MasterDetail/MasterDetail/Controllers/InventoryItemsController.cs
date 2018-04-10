@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using MasterDetail.DataLayer;
 using MasterDetail.Models;
+using PagedList;
 
 namespace MasterDetail.Controllers
 {
@@ -17,7 +18,7 @@ namespace MasterDetail.Controllers
         private ApplicationDbContext context = new ApplicationDbContext();
 
         // GET: InventoryItems
-        public async Task<ActionResult> Index(string sort, string search)
+        public async Task<ActionResult> Index(string sort, string search, int? page)
         {
             ViewBag.CategorySort = string.IsNullOrEmpty(sort) ? "category_desc" : string.Empty;
             ViewBag.ItemCodeSort = sort == "itemcode" ? "itemcode_desc" : "itemcode";
@@ -59,7 +60,10 @@ namespace MasterDetail.Controllers
                     break;
             }
 
-            return View(await inventoryItems.ToListAsync());
+            int pageSize = 3;
+            int pageNumber = page ?? 1;
+
+            return View(await Task.FromResult(inventoryItems.ToPagedList(pageNumber, pageSize)));
         }
 
         // GET: InventoryItems/Details/5

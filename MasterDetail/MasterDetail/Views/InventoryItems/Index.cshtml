@@ -1,5 +1,7 @@
-﻿@model IEnumerable<MasterDetail.Models.InventoryItem>
-
+﻿
+@using PagedList.Mvc
+@model PagedList.IPagedList<MasterDetail.Models.InventoryItem>
+<link href="~/Content/PagedList.css" rel="stylesheet" />
 @{
     ViewBag.Title = "Inventory Items";
 }
@@ -58,3 +60,6 @@
     }
 
 </table>
+
+page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) or @Model.PageCount
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, sort = ViewBag.CurrentSort, search = ViewBag.CurrentSearch }))
