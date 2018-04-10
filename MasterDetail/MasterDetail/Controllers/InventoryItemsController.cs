@@ -17,9 +17,48 @@ namespace MasterDetail.Controllers
         private ApplicationDbContext context = new ApplicationDbContext();
 
         // GET: InventoryItems
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(string sort, string search)
         {
+            ViewBag.CategorySort = string.IsNullOrEmpty(sort) ? "category_desc" : string.Empty;
+            ViewBag.ItemCodeSort = sort == "itemcode" ? "itemcode_desc" : "itemcode";
+            ViewBag.NameSort = sort == "name" ? "name_desc" : "name";
+            ViewBag.UnitPriceSort = sort == "unitprice" ? "unitprice" : "unitprice";
+
+            ViewBag.CurrentSort = sort;
+            ViewBag.CurrentSearch = search;
+
             var inventoryItems = context.InventoryItems.Include(i => i.Category);
+
+            if (!string.IsNullOrEmpty(search))
+                inventoryItems = inventoryItems.Where(i => i.InventoryItemCode.StartsWith(search) || i.InventoryItemName.StartsWith(search));
+
+            switch (sort)
+            {
+                case "category_desc":
+                    inventoryItems = inventoryItems.OrderByDescending(i => i.Category.CategoryName).ThenBy(i => i.InventoryItemName);
+                    break;
+                case "itemcode":
+                    inventoryItems = inventoryItems.OrderBy(i => i.InventoryItemCode);
+                    break;
+                case "itemcode_desc":
+                    inventoryItems = inventoryItems.OrderByDescending(i => i.InventoryItemCode);
+                    break;
+                case "name":
+                    inventoryItems = inventoryItems.OrderBy(i => i.InventoryItemName);
+                    break;
+                case "name_desc":
+                    inventoryItems = inventoryItems.OrderByDescending(i => i.InventoryItemName);
+                    break;
+                case "unitprice":
+                    inventoryItems = inventoryItems.OrderBy(i => i.UnitPrice).ThenBy(i => i.InventoryItemName);
+                    break;
+                case "unitprice_desc":
+                    inventoryItems = inventoryItems.OrderByDescending(i => i.UnitPrice).ThenBy(i => i.InventoryItemName);
+                    break;
+                default: inventoryItems = inventoryItems.OrderBy(i => i.Category.CategoryName).ThenBy(i => i.InventoryItemName);
+                    break;
+            }
+
             return View(await inventoryItems.ToListAsync());
         }
 
