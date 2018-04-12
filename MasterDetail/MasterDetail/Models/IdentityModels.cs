@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -27,6 +28,7 @@ namespace MasterDetail.Models
         public string State { get; set; }
         public string ZipCode { get; set; }
         public ICollection<WorkOrder> WorkOrders { get; set; }
+        [Display(Name = "Full Name")]
         public string FullName => $"{FirstName} {LastName}";
         public string AddressBlock
         {
