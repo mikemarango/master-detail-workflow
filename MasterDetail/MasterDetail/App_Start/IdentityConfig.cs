@@ -23,9 +23,9 @@ namespace MasterDetail
         public Task SendAsync(IdentityMessage message)
         {
 
-            const string userName = "mikeywafula@gmail.com"; //mikeywafula@gmail.com apikey
+            const string userName = ""; //mikeywafula@gmail.com apikey
             const string from = "testmasterdetails@gmail.com";
-            const string password = "@Syncsis118419amen"; // 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
+            const string password = ""; // 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
             const int port = 587;
 
             var smtpClient = new SmtpClient("smtp.sendgrid.net", port)

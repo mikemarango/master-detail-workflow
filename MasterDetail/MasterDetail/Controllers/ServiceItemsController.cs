@@ -117,6 +117,22 @@ namespace MasterDetail.Controllers
             return RedirectToAction("Index");
         }
 
+        public JsonResult GetServiceItemsForAutocomplete(string term)
+        {
+            ServiceItem[] serviceItems = string.IsNullOrWhiteSpace(term) ? null : context.ServiceItems
+                .Where(i => i.ServiceItemCode.Contains(term) || i.ServiceItemName.Contains(term)).ToArray();
+
+            return Json(serviceItems.Select(m => new
+            {
+                id = m.ServiceItemCode,
+                value = m.ServiceItemCode,
+                label = $"{m.ServiceItemCode}: {m.ServiceItemName}",
+                m.ServiceItemName,
+                m.Rate
+
+            }), JsonRequestBehavior.AllowGet);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

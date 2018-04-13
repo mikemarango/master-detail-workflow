@@ -173,5 +173,22 @@ namespace MasterDetail.Controllers
             }
             base.Dispose(disposing);
         }
+
+        public JsonResult GetInventoryItemsForAutocomplete(string term)
+        {
+            InventoryItem[] matchingInventoryItems
+                = string.IsNullOrWhiteSpace(term) ? null : context.InventoryItems
+                .Where(i => i.InventoryItemCode.Contains(term) || i.InventoryItemName.Contains(term)).ToArray();
+
+            return Json(matchingInventoryItems.Select(m => new
+            {
+                id = m.InventoryItemCode,
+                value = m.InventoryItemCode,
+                label = $"{m.InventoryItemCode}: {m.InventoryItemName},",
+                m.InventoryItemName,
+                m.UnitPrice
+
+            }), JsonRequestBehavior.AllowGet);
+        }
     }
 }
