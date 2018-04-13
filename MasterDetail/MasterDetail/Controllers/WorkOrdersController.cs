@@ -44,7 +44,7 @@ namespace MasterDetail.Controllers
         public ActionResult Create()
         {
             //ViewBag.CurrentWorkerId = new SelectList(context.ApplicationUsers, "Id", "FirstName");
-            ViewBag.CustomerId = new SelectList(context.Customers, "CustomerId", "AccountNumber");
+            ViewBag.CustomerId = new SelectList(context.Customers, "CustomerId", "CompanyName");
             return View();
         }
 
@@ -53,7 +53,7 @@ namespace MasterDetail.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "WorkOrderId,CustomerId,OrderDateTime,TargetDateTime,DropDeadDateTime,Description,WorkOrderStatus,CertificationRequirements,CurrentWorkerId")] WorkOrder workOrder)
+        public async Task<ActionResult> Create([Bind(Include = "WorkOrderId,CustomerId,OrderDateTime,TargetDateTime,DropDeadDateTime,Description,WorkOrderStatus,CertificationRequirements,CurrentWorkerId,ReworkNotes")] WorkOrder workOrder)
         {
             if (ModelState.IsValid)
             {
@@ -90,17 +90,32 @@ namespace MasterDetail.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "WorkOrderId,CustomerId,OrderDateTime,TargetDateTime,DropDeadDateTime,Description,WorkOrderStatus,CertificationRequirements,CurrentWorkerId")] WorkOrder workOrder)
+        public async Task<ActionResult> Edit([Bind(Include = "WorkOrderId,CustomerId,OrderDateTime,TargetDateTime,DropDeadDateTime,Description,WorkOrderStatus,CertificationRequirements,CurrentWorkerId")] WorkOrder workOrder, string command)
         {
             if (ModelState.IsValid)
             {
-                workOrder.CurrentWorkerId = User.Identity.GetUserId();
+                // Populate Parts and Labors
+                workOrder.Parts = context.Parts.Where(p => p.WorkOrderId == workOrder.WorkOrderId).ToList();
+                workOrder.Labors = context.Labors.Where(l => l.WorkOrderId == workOrder.WorkOrderId).ToList();
+
+                PromotionResult promotionResult = new PromotionResult();
+
+                if (command == "Save")
+                    promotionResult.Success = true;
+                else if (command == "Claim")
+                    promotionResult = workOrder.ClaimWorkOrder(User.Identity.GetUserId());
+                else
+                    promotionResult = workOrder.PromoteWorkOrder(command);
+
+                if (!promotionResult.Success)
+                    TempData["MessageToClient"] = promotionResult.Message;
+
                 context.Entry(workOrder).State = EntityState.Modified;
                 await context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
             //ViewBag.CurrentWorkerId = new SelectList(context.ApplicationUsers, "Id", "FirstName", workOrder.CurrentWorkerId);
-            ViewBag.CustomerId = new SelectList(context.Customers, "CustomerId", "AccountNumber", workOrder.CustomerId);
+            //ViewBag.CustomerId = new SelectList(context.Customers, "CustomerId", "AccountNumber", workOrder.CustomerId);
             return View(workOrder);
         }
 
